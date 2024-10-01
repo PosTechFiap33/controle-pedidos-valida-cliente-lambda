@@ -3,47 +3,56 @@ using Amazon.Lambda.Core;
 using Npgsql;
 using NpgsqlTypes;
 using System.Text.Json;
+using ValidaClienteAWSLambda.Models;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 namespace ValidaClienteAWSLambda;
 
 public class Function
 {
-    private string connectionString = "Host=controle-pedidos-db.czi6qjrph1bx.us-east-1.rds.amazonaws.com:5432;Username=ControlePedidoUser;Password=CPapyTes;Database=ControlePedidosDb";
+    private string connectionString = Environment.GetEnvironmentVariable("LAMBDA_DB_CONNECTION");
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input, ILambdaContext context)
     {
         string cpf = input.PathParameters["cpf"];
 
-        var responseSucesso = new { mensagem = "CPF cadastrado!" };
-        var responseCpfNaoEncontrado = new { mensagem = "CPF não cadastrado!" };
-        var responseCpfInvalido = new { mensagem = "Número de CPF inválido!" };
-
-        if(!IsCpfValid(cpf))
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 400,
-                Body = JsonSerializer.Serialize(responseCpfInvalido),
-                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-            };
-
-        bool cpfExists = await ValidateCPFAsync(cpf);
-
-        if (cpfExists)
+        try
         {
-            return new APIGatewayProxyResponse
+            if (!IsCpfValid(cpf))
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 400,
+                    Body = JsonSerializer.Serialize(new ResponseModel("Número de CPF inválido!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
+
+            bool cpfExists = await ValidateCPFAsync(cpf);
+
+            if (cpfExists)
             {
-                StatusCode = 200,
-                Body = JsonSerializer.Serialize(responseSucesso),
-                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-            };
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 200,
+                    Body = JsonSerializer.Serialize(new ResponseModel("CPF cadastrado!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
+            }
+            else
+            {
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 403,
+                    Body = JsonSerializer.Serialize(new ResponseModel("CPF não cadastrado!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
+            }
         }
-        else
+        catch (Exception ex) when (ex is NpgsqlException || ex is InvalidOperationException)
         {
             return new APIGatewayProxyResponse
             {
-                StatusCode = 403,
-                Body = JsonSerializer.Serialize(responseCpfNaoEncontrado),
+                StatusCode = 500,
+                Body = JsonSerializer.Serialize(new ResponseModel("Erro ao conectar ao banco de dados!")),
                 Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
         }
@@ -51,17 +60,24 @@ public class Function
 
     public async Task<bool> ValidateCPFAsync(string cpf)
     {
-        using (var connection = new NpgsqlConnection(connectionString))
+        try
         {
-            await connection.OpenAsync();
-
-            using (var command = new NpgsqlCommand("SELECT COUNT(*) FROM \"Clientes\" WHERE \"Cpf\" = @cpf", connection))
+            using (var connection = new NpgsqlConnection(connectionString))
             {
-                command.Parameters.Add(new NpgsqlParameter("@cpf", NpgsqlDbType.Varchar) { Value = cpf });
+                await connection.OpenAsync();
 
-                var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt32(result) > 0;
+                using (var command = new NpgsqlCommand("SELECT COUNT(*) FROM \"Clientes\" WHERE \"Cpf\" = @cpf", connection))
+                {
+                    command.Parameters.Add(new NpgsqlParameter("@cpf", NpgsqlDbType.Varchar) { Value = cpf });
+
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(result) > 0;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Erro ao conectar ao banco de dados", ex);
         }
     }
 
