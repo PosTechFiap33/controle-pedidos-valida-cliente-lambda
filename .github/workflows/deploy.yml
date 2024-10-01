@@ -13,9 +13,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: List files in the repository
-      run: ls -la
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -28,6 +25,6 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: valida-cliente-lambda-stack  # Nome do stack CloudFormation
-        template: template.yaml  # Caminho para o template CloudFormation
+        template: template.yml  # Caminho para o template CloudFormation
         no-fail-on-empty-changeset: true
         capabilities: CAPABILITY_NAMED_IAM
