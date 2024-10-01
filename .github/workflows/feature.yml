@@ -47,6 +47,6 @@ jobs:
       uses: repo-sync/pull-request@v2
       with:
         destination_branch: 'develop'
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GH_ACTIONS }}
         pr_label: 'Feature automated PR'
         pr_title: 'Merge feature into develop'
