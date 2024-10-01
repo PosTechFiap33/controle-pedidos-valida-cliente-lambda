@@ -49,7 +49,7 @@ public class Function
         }
     }
 
-    private async Task<bool> ValidateCPFAsync(string cpf)
+    public async Task<bool> ValidateCPFAsync(string cpf)
     {
         using (var connection = new NpgsqlConnection(connectionString))
         {
@@ -65,7 +65,7 @@ public class Function
         }
     }
 
-    private static bool IsCpfValid(string cpf)
+    public static bool IsCpfValid(string cpf)
     {
         int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
         int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
