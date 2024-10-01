@@ -27,7 +27,7 @@ jobs:
     steps:
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Merge develop into main'
@@ -35,4 +35,3 @@ jobs:
           title: 'Merge develop into main'
           body: 'This PR merges changes from develop into main'
           base: 'main'
-          head: 'develop'
