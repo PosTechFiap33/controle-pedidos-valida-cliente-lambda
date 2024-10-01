@@ -2,6 +2,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Npgsql;
 using NpgsqlTypes;
+using System.Text.Json;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 namespace ValidaClienteAWSLambda;
@@ -12,13 +13,18 @@ public class Function
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        string cpf = input.QueryStringParameters["cpf"];
+        string cpf = input.PathParameters["cpf"];
+
+        var responseSucesso = new { mensagem = "CPF cadastrado!" };
+        var responseCpfNaoEncontrado = new { mensagem = "CPF não cadastrado!" };
+        var responseCpfInvalido = new { mensagem = "Número de CPF inválido!" };
 
         if(!IsCpfValid(cpf))
             return new APIGatewayProxyResponse
             {
                 StatusCode = 400,
-                Body = "Número de CPF inválido!"
+                Body = JsonSerializer.Serialize(responseCpfInvalido),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
 
         bool cpfExists = await ValidateCPFAsync(cpf);
@@ -28,7 +34,8 @@ public class Function
             return new APIGatewayProxyResponse
             {
                 StatusCode = 200,
-                Body = "CPF cadastrado!"
+                Body = JsonSerializer.Serialize(responseSucesso),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
         }
         else
@@ -36,7 +43,8 @@ public class Function
             return new APIGatewayProxyResponse
             {
                 StatusCode = 403,
-                Body = "CPF não cadastrado!"
+                Body = JsonSerializer.Serialize(responseCpfNaoEncontrado),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
             };
         }
     }
