@@ -32,7 +32,7 @@ jobs:
       run: dotnet build --configuration Release src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
     -name: Run Tests
-      run: dotnet test --no-build --configuration Release --verbosity normal src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+      run: dotnet test src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v4
