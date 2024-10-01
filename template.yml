@@ -5,7 +5,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Handler: 'ValidaClienteAWSLambda::ValidaClienteAWSLambda.Function::FunctionHandler'
-      Role: 'arn:aws:iam::752307938219:role/voclabs'
+      Role: 'arn:aws:iam::752307938219:role/RoleForLambdaModLabRole'
       Code:
         S3Bucket: 'valida-cliente-lambda-s3'
         S3Key: 'valida-cliente-lambda-package.zip'
