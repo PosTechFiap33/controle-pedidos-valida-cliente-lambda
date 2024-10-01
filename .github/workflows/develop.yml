@@ -1,0 +1,46 @@
+name: Validate Develop PR
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+    - name: Build project
+      run: dotnet build --configuration Release src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+    -name: Run Tests
+      run: dotnet test --no-build --configuration Release --verbosity normal src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'Merge develop into main'
+        branch: 'auto-pr-develop-to-main'
+        title: 'Merge develop into main'
+        body: 'This PR merges changes from develop into main'
+        base: 'main'
+        head: 'develop'
