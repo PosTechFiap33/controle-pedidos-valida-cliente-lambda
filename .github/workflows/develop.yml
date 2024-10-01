@@ -1,0 +1,27 @@
+name: Validate Develop PR
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create Pull Request
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: 'main'
+        github_token: ${{ secrets.GH_ACTIONS }}
+        pr_label: 'Develop automated PR'
+        pr_title: 'Merge develop into main'

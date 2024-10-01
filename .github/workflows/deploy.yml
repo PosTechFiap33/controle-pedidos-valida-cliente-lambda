@@ -49,3 +49,11 @@ jobs:
         template: template.yml  # Caminho para o template CloudFormation
         no-fail-on-empty-changeset: true
         capabilities: CAPABILITY_NAMED_IAM
+      env:
+        LAMBDA_DB_CONNECTION: ${{ secrets.LAMBDA_DB_CONNECTION }}
+
+    - name: Set environment variable for Lambda
+      run: |
+          aws lambda update-function-configuration \
+          --function-name ValidaClienteLambdaFunction \
+          --environment "Variables={LAMBDA_DB_CONNECTION=${{ secrets.LAMBDA_DB_CONNECTION }}}"
