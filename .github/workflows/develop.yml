@@ -31,7 +31,7 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
-    -name: Run Tests
+    - name: Run Tests
       run: dotnet test src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
     - name: Create Pull Request
