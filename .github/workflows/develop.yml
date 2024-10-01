@@ -26,11 +26,13 @@ jobs:
     
     steps:
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: 'Merge develop into main'
-          branch: 'auto-pr-develop-to-main'
-          title: 'Merge develop into main'
-          body: 'This PR merges changes from develop into main'
-          base: 'main'
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create Pull Request
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: 'develop'
+        github_token: ${{ secrets.GH_ACTIONS }}
+        pr_label: 'Develop automated PR'
+        pr_title: 'Merge develop into main'
