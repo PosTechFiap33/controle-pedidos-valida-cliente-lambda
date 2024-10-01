@@ -18,6 +18,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_ADR }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ADR }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_ADR }}
         aws-region: us-east-1  # Substitua pela sua região AWS
 
     - name: Deploy CloudFormation stack
