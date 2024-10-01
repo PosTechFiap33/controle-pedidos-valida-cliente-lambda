@@ -1,35 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  LambdaExecutionRole:
-    Type: 'AWS::IAM::Role'
-    Properties: 
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: 'Allow'
-            Principal:
-              Service: 'lambda.amazonaws.com'
-            Action: 'sts:AssumeRole'
-      Policies:
-        - PolicyName: 'LambdaExecutionPolicy'
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: 'Allow'
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: 'arn:aws:logs:*:*:*'
 
   ValidaClienteLambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
       Handler: 'ValidaClienteAWSLambda::ValidaClienteAWSLambda.Function::FunctionHandler'
-      Role: 
-        Fn::GetAtt:
-          - 'LambdaExecutionRole'
-          - 'Arn'
+      Role: 'arn:aws:iam::342730323405:role/c129145a3272732l7800119t1w34273032340-LambdaSLRRole-D4VZGPpXwfHL'
       Code:
         S3Bucket: 'valida-cliente-lambda'
         S3Key: 'valida-cliente-lambda-package.zip'
