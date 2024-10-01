@@ -10,58 +10,60 @@ namespace ValidaClienteAWSLambda;
 
 public class Function
 {
-    private string connectionString = Environment.GetEnvironmentVariable("LAMBDA_DB_CONNECTION");
+    private string connectionString = "Host=controle-pedidos-db.czi6qjrph1bx.us-east-1.rds.amazonaws.com:5432;Username=ControlePedidoUser;Password=CPapyTes;Database=ControlePedidosDb";
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        //string cpf = input.QueryStringParameters["cpf"];
-        return new APIGatewayProxyResponse
+        if(input.QueryStringParameters == null || !input.QueryStringParameters.TryGetValue("cpf", out string cpf))
         {
-            StatusCode = 200,
-            Body = JsonSerializer.Serialize(input),
-            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        };
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 400,
+                Body = JsonSerializer.Serialize(new ResponseModel("Query parameter vazio")),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+            };
+        }
 
-        //try
-        //{
-        //    if (!IsCpfValid(cpf))
-        //        return new APIGatewayProxyResponse
-        //        {
-        //            StatusCode = 400,
-        //            Body = JsonSerializer.Serialize(new ResponseModel("Número de CPF inválido!")),
-        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        //        };
+        try
+        {
+            if (!IsCpfValid(cpf))
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 400,
+                    Body = JsonSerializer.Serialize(new ResponseModel("Número de CPF inválido!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
 
-        //    bool cpfExists = await ValidateCPFAsync(cpf);
+            bool cpfExists = await ValidateCPFAsync(cpf);
 
-        //    if (cpfExists)
-        //    {
-        //        return new APIGatewayProxyResponse
-        //        {
-        //            StatusCode = 200,
-        //            Body = JsonSerializer.Serialize(new ResponseModel("CPF cadastrado!")),
-        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        //        };
-        //    }
-        //    else
-        //    {
-        //        return new APIGatewayProxyResponse
-        //        {
-        //            StatusCode = 403,
-        //            Body = JsonSerializer.Serialize(new ResponseModel("CPF não cadastrado!")),
-        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        //        };
-        //    }
-        //}
-        //catch (Exception ex) when (ex is NpgsqlException || ex is InvalidOperationException)
-        //{
-        //    return new APIGatewayProxyResponse
-        //    {
-        //        StatusCode = 500,
-        //        Body = JsonSerializer.Serialize(new ResponseModel("Erro ao conectar ao banco de dados!")),
-        //        Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-        //    };
-        //}
+            if (cpfExists)
+            {
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 200,
+                    Body = JsonSerializer.Serialize(new ResponseModel("CPF cadastrado!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
+            }
+            else
+            {
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = 403,
+                    Body = JsonSerializer.Serialize(new ResponseModel("CPF não cadastrado!")),
+                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+                };
+            }
+        }
+        catch (Exception ex) when (ex is NpgsqlException || ex is InvalidOperationException)
+        {
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = 500,
+                Body = JsonSerializer.Serialize(new ResponseModel("Erro ao conectar ao banco de dados!")),
+                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+            };
+        }
     }
 
     public async Task<bool> ValidateCPFAsync(string cpf)
