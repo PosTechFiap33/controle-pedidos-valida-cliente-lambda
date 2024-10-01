@@ -79,23 +79,8 @@ Resources:
           integration.request.path.cpf: 'method.request.path.cpf'
       MethodResponses:
         - StatusCode: '200'
-          ResponseTemplates:
-            application/json: |
-              {
-                "mensagem": "CPF cadastrado!"
-              }
         - StatusCode: '400'
-          ResponseTemplates:
-            application/json: |
-              {
-                "mensagem": "Número de CPF inválido!"
-              }
         - StatusCode: '403'
-          ResponseTemplates:
-            application/json: |
-                {
-                    "mensagem": "CPF não cadastrado!"
-                }
 
   ApiGatewayDeployment:
     Type: 'AWS::ApiGateway::Deployment'
