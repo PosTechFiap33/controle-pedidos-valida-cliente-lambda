@@ -10,19 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  checkout-develop:
-    runs-on: ubuntu-latest
-
-    steps:
-    
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.ref }}
-
   create-pull-request:
     runs-on: ubuntu-latest
-    needs: checkout-develop
     
     steps:
 
@@ -32,7 +21,7 @@ jobs:
     - name: Create Pull Request
       uses: repo-sync/pull-request@v2
       with:
-        destination_branch: 'develop'
+        destination_branch: 'main'
         github_token: ${{ secrets.GH_ACTIONS }}
         pr_label: 'Develop automated PR'
         pr_title: 'Merge develop into main'
