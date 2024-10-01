@@ -14,7 +14,7 @@ public class Function
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        string cpf = input.PathParameters["cpf"];
+        string cpf = input.QueryStringParameters["cpf"];
 
         try
         {

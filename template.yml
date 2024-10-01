@@ -40,7 +40,7 @@ Resources:
       RestApiId:
         Ref: 'ApiGateway'
       RequestParameters:
-        method.request.path.cpf: true
+        method.request.querystring.cpf: true
       Integration:
         Type: 'AWS_PROXY'
         IntegrationHttpMethod: 'POST'
@@ -52,7 +52,7 @@ Resources:
                   - 'ValidaClienteLambdaFunction'
                   - 'Arn'
         RequestParameters:
-          integration.request.path.cpf: 'method.request.path.cpf'
+          integration.request.querystring.cpf: 'method.request.querystring.cpf'
       MethodResponses:
         - StatusCode: '200'
         - StatusCode: '400'
