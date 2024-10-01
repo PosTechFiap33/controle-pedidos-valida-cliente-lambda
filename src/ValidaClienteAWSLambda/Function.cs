@@ -14,7 +14,13 @@ public class Function
 
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest input, ILambdaContext context)
     {
-        string cpf = input.QueryStringParameters["cpf"];
+        //string cpf = input.QueryStringParameters["cpf"];
+        return new APIGatewayProxyResponse
+        {
+            StatusCode = 200,
+            Body = JsonSerializer.Serialize(input),
+            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        };
 
         try
         {
