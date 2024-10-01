@@ -19,14 +19,14 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
     - name: Build project
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
 
     - name: Package Lambda function
       run: |
-        dotnet publish -c Release -o out
+        dotnet publish -c Release -o out src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
         cd out
         zip -r ../valida-cliente-lambda-package.zip .
         cd ..
