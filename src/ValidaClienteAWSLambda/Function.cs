@@ -22,46 +22,46 @@ public class Function
             Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
         };
 
-        try
-        {
-            if (!IsCpfValid(cpf))
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 400,
-                    Body = JsonSerializer.Serialize(new ResponseModel("Número de CPF inválido!")),
-                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-                };
+        //try
+        //{
+        //    if (!IsCpfValid(cpf))
+        //        return new APIGatewayProxyResponse
+        //        {
+        //            StatusCode = 400,
+        //            Body = JsonSerializer.Serialize(new ResponseModel("Número de CPF inválido!")),
+        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        //        };
 
-            bool cpfExists = await ValidateCPFAsync(cpf);
+        //    bool cpfExists = await ValidateCPFAsync(cpf);
 
-            if (cpfExists)
-            {
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 200,
-                    Body = JsonSerializer.Serialize(new ResponseModel("CPF cadastrado!")),
-                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-                };
-            }
-            else
-            {
-                return new APIGatewayProxyResponse
-                {
-                    StatusCode = 403,
-                    Body = JsonSerializer.Serialize(new ResponseModel("CPF não cadastrado!")),
-                    Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-                };
-            }
-        }
-        catch (Exception ex) when (ex is NpgsqlException || ex is InvalidOperationException)
-        {
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = 500,
-                Body = JsonSerializer.Serialize(new ResponseModel("Erro ao conectar ao banco de dados!")),
-                Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
-            };
-        }
+        //    if (cpfExists)
+        //    {
+        //        return new APIGatewayProxyResponse
+        //        {
+        //            StatusCode = 200,
+        //            Body = JsonSerializer.Serialize(new ResponseModel("CPF cadastrado!")),
+        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        //        };
+        //    }
+        //    else
+        //    {
+        //        return new APIGatewayProxyResponse
+        //        {
+        //            StatusCode = 403,
+        //            Body = JsonSerializer.Serialize(new ResponseModel("CPF não cadastrado!")),
+        //            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        //        };
+        //    }
+        //}
+        //catch (Exception ex) when (ex is NpgsqlException || ex is InvalidOperationException)
+        //{
+        //    return new APIGatewayProxyResponse
+        //    {
+        //        StatusCode = 500,
+        //        Body = JsonSerializer.Serialize(new ResponseModel("Erro ao conectar ao banco de dados!")),
+        //        Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } }
+        //    };
+        //}
     }
 
     public async Task<bool> ValidateCPFAsync(string cpf)
