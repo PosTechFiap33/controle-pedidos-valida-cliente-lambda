@@ -1,0 +1,52 @@
+name: Feature to Develop PR
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+    - name: Build project
+      run: dotnet build --configuration Release src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+    - name: Run Tests
+      run: dotnet test src/ValidaClienteAWSLambda/ValidaClienteAWSLambda.sln
+
+  create-pull-request:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create Pull Request
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: 'develop'
+        github_token: ${{ secrets.GH_ACTIONS }}
+        pr_label: 'Feature automated PR'
+        pr_title: 'Merge feature into develop'
