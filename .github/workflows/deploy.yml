@@ -13,6 +13,24 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release
+
+    - name: Package Lambda function
+      run: |
+        dotnet publish -c Release -o out
+        cd out
+        zip -r ../valida-cliente-lambda-package.zip .
+        cd ..
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -20,6 +38,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_ADR }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_ADR }}
         aws-region: us-east-1  # Substitua pela sua região AWS
+
+    - name: Upload Lambda package to S3
+      run: aws s3 cp valida-cliente-lambda-package.zip s3://valida-cliente-lambda/valida-cliente-lambda-package.zip
 
     - name: Deploy CloudFormation stack
       uses: aws-actions/aws-cloudformation-github-deploy@v1
