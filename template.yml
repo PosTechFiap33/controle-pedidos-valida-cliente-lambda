@@ -64,3 +64,5 @@ Resources:
       RestApiId:
         Ref: 'ApiGateway'
       StageName: 'prod'
+      dependsOn:
+        - 'LambdaApiMethod'
