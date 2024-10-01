@@ -1,0 +1,20 @@
+﻿# .NET Core 3.1, .NET 5, .NET 6, .NET 7, .NET 8
+bin/
+obj/
+out/
+.vs/
+*.dll
+*.exe
+*.app
+*.so
+*.dylib
+*.pdb
+*.cache
+*.ilk
+*.log
+*.userprefs
+*.userosscache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
